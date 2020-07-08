@@ -1,0 +1,23 @@
+version: 0.3.0
+inputs:
+  files:
+    - ex_scoring_solution.inp
+workflow:
+  type: serial
+  specification:
+    steps:
+      - environment: 'quantumdaniel/fluka:latest'
+        commands:
+          - /usr/local/fluka/bin/rfluka -M 1 'ex_scoring_solution.inp'
+outputs:
+  files:
+    - ex_scoring_solution001.err
+    - ex_scoring_solution000.out
+    - ex_scoring_solution001.log
+    - ranex_scoring_solution002
+    - ranex_scoring_solution001
+    - ex_scoring_solution001_fort.40
+    - ex_scoring_solution001_fort.41
+    - ex_scoring_solution001_fort.31
+    - ex_scoring_solution001_fort.32
+    - ex_scoring_solution001_fort.51

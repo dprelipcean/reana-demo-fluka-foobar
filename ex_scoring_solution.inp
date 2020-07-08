@@ -1,0 +1,78 @@
+* ..+....1....+....2....+....3....+....4....+....5....+....6....+....7...
+TITLE
+FLUKA Course Exercise
+*
+* use names everywhere and free format for geometry
+DEFAULTS                                                              PRECISIO
+* beam definitions
+BEAM            -3.5      -0.8    1900.0                              PROTON
+BEAMPOS                             -0.1
+* Geometry
+* --------
+GEOBEGIN                                                              COMBNAME
+    0    0          Cylindrical Target
+* Bodies
+* ------
+* Blackhole to include geometry
+SPH BLK        0.0 0.0 0.0 10000.0
+* Void sphere
+SPH VOID       0.0 0.0 0.0 1000.0
+* Infinite cylinder
+ZCC TARG       0.0 0.0 5.0
+* planes cutting the cylinder
+XYP ZTlow      0.0
+XYP T1seg      1.0
+XYP T2seg      2.0
+XYP ZThigh     10.0
+*
+END
+* Regions
+* -------
+* Blackhole
+BLKHOLE      5 +BLK -VOID
+* Target segment 1
+TARGS1       5 +TARG -ZTlow +T1seg
+* Target segment 2
+TARGS2       5 +TARG -T1seg +T2seg
+* Target segment 3
+TARGS3       5 +TARG -T2seg +ZThigh
+* Air around target
+INAIR        5 | +VOID -TARG
+               | +VOID +ZTlow
+               | +VOID -ZThigh
+END
+GEOEND
+* Materials definition
+* --------------------
+MATERIAL                        0.001965                              CO2
+COMPOUND         1.0    CARBON       2.0    OXYGEN                    CO2
+*
+ASSIGNMA    BLCKHOLE   BLKHOLE
+ASSIGNMA       WATER    TARGS1
+ASSIGNMA    ALUMINUM    TARGS2
+ASSIGNMA        LEAD    TARGS3
+ASSIGNMA         CO2     INAIR
+* Solution point 1
+* primary incoming: fluence and current
+USRBDX          99.0    PROTON      -51.     INAIR    TARGS1   78.5398PrimF
+USRBDX          10.0     0.001      40.0                               &
+USRBDX           -1.    PROTON      -51.     INAIR    TARGS1   78.5398PrimC
+USRBDX          10.0     0.001      40.0                               &
+* Solution point 2
+* Energy deposition by region
+USRBIN           12.    ENERGY      -31.     INAIR                    EnByRegion
+USRBIN        TARGS1                                                   &
+* Energy deposition by grid
+USRBIN          11.0    ENERGY      -32.       5.0       0.0      10.0EnDep
+USRBIN           0.0       0.0       0.0       1.0       1.0      10.0 &
+* Solution point 3
+* energy deposition: small bin size
+USRBIN          11.0    ENERGY     -40.0      10.0       0.0      15.0TargEne
+USRBIN           0.0       0.0      -5.0     100.0       1.0     200.0 &
+* energy deposition: large bin size
+USRBIN          11.0    ENERGY      -41.      10.0       0.0      15.0TargBig
+USRBIN           0.0       0.0      -5.0      50.0       1.0     200.0 &
+*
+RANDOMIZ         1.0
+START         1000.0                                     0.0
+STOP
